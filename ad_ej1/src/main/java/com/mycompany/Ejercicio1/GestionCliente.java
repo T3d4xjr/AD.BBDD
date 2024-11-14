@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.Ejercicio1;
 
 import java.sql.Connection;
@@ -27,6 +23,11 @@ public class GestionCliente {
             System.out.println("4. Modificar datos de un cliente");
             System.out.println("5. Borrar un cliente por email");
             System.out.println("6. Salir");
+            System.out.println("7. Ranking de clientes");
+            System.out.println("8. Añadir un pedido");
+            System.out.println("9. Actualizar un pedido");
+            System.out.println("10. Borrar un pedido");
+            System.out.println("11. Salir del programa");
             System.out.print("Seleccione una opción: ");
             opcion = sc.nextInt();
             sc.nextLine(); // Consumir el salto de línea
@@ -49,7 +50,19 @@ public class GestionCliente {
                         ConsultasCliente.borrarCliente(conn, sc);
                         break;
                     case 6:
-                        System.out.println("Saliendo de la aplicación...");
+                        ConsultasCliente.rankingClientes(conn);
+                        break;
+                    case 7:
+                        ConsultasCliente.añadirPedido(conn, sc);
+                        break;
+                    case 8:
+                        ConsultasCliente.actualizarPedido(conn, sc);
+                        break;
+                    case 9:
+                        ConsultasCliente.borrarPedido(conn, sc);
+                        break;
+                    case 10:
+                        System.out.println("Saliendo del programa...");
                         break;
                     default:
                         System.out.println("Opción no válida. Intente de nuevo.");
@@ -58,7 +71,7 @@ public class GestionCliente {
                 System.out.println("Error al conectar a la base de datos");
                 e.printStackTrace();
             }
-        } while (opcion != 6);
+        } while (opcion != 10);
 
         sc.close();
     }

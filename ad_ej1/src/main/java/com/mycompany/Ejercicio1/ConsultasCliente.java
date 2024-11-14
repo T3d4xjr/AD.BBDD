@@ -108,4 +108,104 @@ public class ConsultasCliente {
             System.out.println(rowsAffected > 0 ? "Cliente borrado con éxito." : "No se encontró el cliente.");
         }
     }
+        // Método para mostrar el ranking de clientes
+    public static void rankingClientes(Connection conn) throws SQLException {
+        String sql = """
+            SELECT c.nombre, c.email, COUNT(p.id) AS num_pedidos, IFNULL(SUM(p.gasto), 0) AS total_gasto
+            FROM cliente c
+            LEFT JOIN pedido p ON c.id = p.cliente_id
+            GROUP BY c.id
+            ORDER BY total_gasto DESC
+            """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            System.out.println("\nRanking de Clientes:");
+            System.out.println("Nombre\tEmail\tNúmero de Pedidos\tGasto Total");
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String email = rs.getString("email");
+                int numPedidos = rs.getInt("num_pedidos");
+                double totalGasto = rs.getDouble("total_gasto");
+
+                System.out.println(nombre + "\t" + email + "\t" + numPedidos + "\t" + totalGasto);
+            }
+        }
+    }
+    // Método para añadir un pedido
+    public static void añadirPedido(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Introduce el email del cliente: ");
+        String email = sc.nextLine();
+
+        // Verificar si el cliente existe
+        String sqlCheck = "SELECT id FROM cliente WHERE email = ?";
+        int clienteId = -1;
+        try (PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+            stmtCheck.setString(1, email);
+            ResultSet rs = stmtCheck.executeQuery();
+            if (rs.next()) {
+                clienteId = rs.getInt("id");
+            } else {
+                System.out.println("Cliente no encontrado. Debe registrar al cliente.");
+                return;
+            }
+        }
+
+        // Solicitar datos del pedido
+        System.out.print("Introduce la fecha del pedido (YYYY-MM-DD): ");
+        String fecha = sc.nextLine();
+        System.out.print("Introduce el gasto del pedido: ");
+        double gasto = sc.nextDouble();
+        sc.nextLine();
+
+        // Insertar el pedido
+        String sqlInsertPedido = "INSERT INTO pedido (cliente_id, fecha, gasto) VALUES (?, ?, ?)";
+        try (PreparedStatement stmtInsert = conn.prepareStatement(sqlInsertPedido)) {
+            stmtInsert.setInt(1, clienteId);
+            stmtInsert.setString(2, fecha);
+            stmtInsert.setDouble(3, gasto);
+            int rowsAffected = stmtInsert.executeUpdate();
+            System.out.println(rowsAffected > 0 ? "Pedido añadido con éxito." : "Error al añadir el pedido.");
+        }
+    }
+    // Método para actualizar un pedido
+    public static void actualizarPedido(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Introduce el ID del pedido a actualizar: ");
+        int pedidoId = sc.nextInt();
+        sc.nextLine();
+
+        // Solicitar nuevos datos del pedido
+        System.out.print("Introduce la nueva fecha del pedido (YYYY-MM-DD): ");
+        String fecha = sc.nextLine();
+        System.out.print("Introduce el nuevo gasto del pedido: ");
+        double gasto = sc.nextDouble();
+        sc.nextLine();
+
+        // Actualizar el pedido
+        String sqlUpdate = "UPDATE pedido SET fecha = ?, gasto = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
+            stmt.setString(1, fecha);
+            stmt.setDouble(2, gasto);
+            stmt.setInt(3, pedidoId);
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println(rowsAffected > 0 ? "Pedido actualizado con éxito." : "No se encontró el pedido.");
+        }
+    }
+    // Método para borrar un pedido
+    public static void borrarPedido(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Introduce el ID del pedido a borrar: ");
+        int pedidoId = sc.nextInt();
+        sc.nextLine();
+
+        // Borrar el pedido
+        String sqlDelete = "DELETE FROM pedido WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sqlDelete)) {
+            stmt.setInt(1, pedidoId);
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println(rowsAffected > 0 ? "Pedido borrado con éxito." : "No se encontró el pedido.");
+        }
+    }
+
+    
+
+
 }
