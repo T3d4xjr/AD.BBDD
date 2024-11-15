@@ -1,4 +1,4 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -12,17 +12,23 @@ public class ConsultasCliente {
     // Método para listar todos los clientes
     public static void listarClientes(Connection conn) throws SQLException {
         String sql = "SELECT * FROM cliente";
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = conn.createStatement
+        (ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY); 
+                ResultSet rs = stmt.executeQuery(sql)) {
             System.out.println("\nClientes:");
             System.out.println("ID\tNombre\tEmail\tCiudad\tTeléfono");
             while (rs.next()) {
+                System.out.println("Hay " +"clientes");
                 int id = rs.getInt("id");
                 String nombre = rs.getString("nombre");
                 String email = rs.getString("email");
                 String ciudad = rs.getString("ciudad");
                 String telefono = rs.getString("telefono");
                 System.out.println(id + "\t" + nombre + "\t" + email + "\t" + ciudad + "\t" + telefono);
+                
             }
+           
+         
         }
     }
 
@@ -111,7 +117,7 @@ public class ConsultasCliente {
         // Método para mostrar el ranking de clientes
     public static void rankingClientes(Connection conn) throws SQLException {
         String sql = """
-            SELECT c.nombre, c.email, COUNT(p.id) AS num_pedidos, IFNULL(SUM(p.gasto), 0) AS total_gasto
+            SELECT c.nombre, c.email, COUNT(p.id) AS num_pedidos, SUM(p.precio_total) AS total_gasto
             FROM cliente c
             LEFT JOIN pedido p ON c.id = p.cliente_id
             GROUP BY c.id
