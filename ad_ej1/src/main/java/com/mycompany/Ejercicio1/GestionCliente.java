@@ -62,6 +62,12 @@ public class GestionCliente {
                         ConsultasCliente.borrarPedido(conn, sc);
                         break;
                     case 10:
+                        ConsultasCliente.iniciarSesion(conn, sc);
+                        break;
+                    case 11:
+                        ConsultasCliente.cambiarContraseña(conn, sc);
+                        break;
+                    case 12:
                         System.out.println("Saliendo del programa...");
                         break;
                     default:
@@ -71,7 +77,7 @@ public class GestionCliente {
                 System.out.println("Error al conectar a la base de datos");
                 e.printStackTrace();
             }
-        } while (opcion != 10);
+        } while (opcion != 12);
 
         sc.close();
     }
