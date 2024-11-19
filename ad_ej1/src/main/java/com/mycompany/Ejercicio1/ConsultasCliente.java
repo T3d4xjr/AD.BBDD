@@ -17,7 +17,6 @@ public class ConsultasCliente {
    
     String sql = "SELECT * FROM cliente";
     
-   
     try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
       
         String sqlCount = "SELECT COUNT(*) AS total FROM cliente";
@@ -130,9 +129,7 @@ public class ConsultasCliente {
             ORDER BY total_gasto DESC
             """;
 
-
-   
-    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+    try (Statement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery(sql)) {
         System.out.println("\nRanking de Clientes:");
         System.out.println("Nombre\tEmail\tNúmero de Pedidos\tGasto Total");
 
@@ -233,9 +230,11 @@ public class ConsultasCliente {
         String email = sc.nextLine();
 
         
-        String sqlCheck = "SELECT COUNT(*) AS total FROM cliente WHERE email = '" + email + "'";
+        String sqlCheck = "SELECT COUNT(*) AS total FROM cliente WHERE email = '?'";
 
-        try (Statement stmt = conn.createStatement(); ResultSet rsCheck = stmt.executeQuery(sqlCheck)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sqlCheck)) {
+            try(ResultSet rsCheck = stmt.executeQuery();) {
+             stmt.setString(1,email);
             rsCheck.next();
             int totalClientes = rsCheck.getInt("total");
 
@@ -243,17 +242,22 @@ public class ConsultasCliente {
                 System.out.println("El email no existe.");
                 return;
             }
+            } catch (Exception e) {
+            }
+            
+            
         }
 
         
         System.out.print("Introduce tu nueva contraseña: ");
         String nuevaContraseña = sc.nextLine();
+ 
+        String sqlUpdate = "UPDATE cliente SET contraseña = '?' WHERE email = '?'";
 
-        
-        String sqlUpdate = "UPDATE cliente SET contraseña = '" + nuevaContraseña + "' WHERE email = '" + email + "'";
-
-        try (Statement stmt = conn.createStatement()) {
-            int rowsAffected = stmt.executeUpdate(sqlUpdate);
+        try (PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
+            stmt.setString(1, nuevaContraseña);
+            stmt.setString(2, email);
+            int rowsAffected = stmt.executeUpdate();
             System.out.println(rowsAffected > 0 ? "Contraseña actualizada con éxito." : "Error al actualizar la contraseña.");
         } catch (SQLException e) {
             System.out.println("Error al cambiar la contraseña.");
