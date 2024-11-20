@@ -208,9 +208,11 @@ public class ConsultasCliente {
         String contraseña = sc.nextLine();
 
        
-        String sql = "SELECT nombre FROM cliente WHERE email = '" + email + "' AND contraseña = '" + contraseña + "'";
+        String sql = "SELECT nombre FROM cliente WHERE email = '?' AND contraseña = '?'";
 
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, contraseña);
             if (rs.next()) {
                 
                 String nombre = rs.getString("nombre");

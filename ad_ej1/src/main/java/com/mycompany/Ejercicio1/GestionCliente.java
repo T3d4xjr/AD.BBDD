@@ -22,12 +22,13 @@ public class GestionCliente {
             System.out.println("3. Buscar cliente por fragmento de email");
             System.out.println("4. Modificar datos de un cliente");
             System.out.println("5. Borrar un cliente por email");
-            System.out.println("6. Salir");
-            System.out.println("7. Ranking de clientes");
-            System.out.println("8. Añadir un pedido");
-            System.out.println("9. Actualizar un pedido");
-            System.out.println("10. Borrar un pedido");
-            System.out.println("11. Salir del programa");
+            System.out.println("6. Ranking de clientes");
+            System.out.println("7. Añadir un pedido");
+            System.out.println("8. Actualizar un pedido");
+            System.out.println("9. Borrar un pedido");
+            System.out.println("10. Iniciar Sesion");
+             System.out.println("11. Cambiar contraseña");
+            System.out.println("12. Salir del programa");
             System.out.print("Seleccione una opción: ");
             opcion = sc.nextInt();
             sc.nextLine(); // Consumir el salto de línea
