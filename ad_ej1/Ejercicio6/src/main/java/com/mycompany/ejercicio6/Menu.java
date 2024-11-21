@@ -6,6 +6,30 @@ package com.mycompany.ejercicio6;
 
 import java.util.List;
 import java.util.Scanner;
+/*
+
+CREATE TABLE pelicula (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    director VARCHAR(255) NOT NULL,
+    anio INT NOT NULL,
+    genero VARCHAR(100) NOT NULL
+);
+
+INSERT INTO pelicula (titulo, director, anio, genero) VALUES
+('Inception', 'Christopher Nolan', 2010, 'Ciencia Ficción'),
+('Titanic', 'James Cameron', 1997, 'Drama'),
+('The Dark Knight', 'Christopher Nolan', 2008, 'Acción'),
+('Pulp Fiction', 'Quentin Tarantino', 1994, 'Crimen'),
+('The Matrix', 'Lana Wachowski, Lilly Wachowski', 1999, 'Ciencia Ficción'),
+('Forrest Gump', 'Robert Zemeckis', 1994, 'Drama'),
+('The Godfather', 'Francis Ford Coppola', 1972, 'Crimen'),
+('Parasite', 'Bong Joon Ho', 2019, 'Thriller'),
+('The Avengers', 'Joss Whedon', 2012, 'Acción'),
+('Interstellar', 'Christopher Nolan', 2014, 'Ciencia Ficción');
+
+
+*/
 
 public class Menu {
     public static void main(String[] args) {
