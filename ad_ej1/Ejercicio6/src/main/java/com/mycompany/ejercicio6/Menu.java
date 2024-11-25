@@ -55,8 +55,7 @@ public class Menu {
                     System.out.println("\nLista de Películas:");
                     List<Pelicula> peliculas = peliculaDAO.listarTodas();
                     for (Pelicula p : peliculas) {
-                        System.out.printf("ID: %d, Título: %s, Director: %s, Año: %d, Género: %s%n",
-                                p.getId(), p.getTitulo(), p.getDirector(), p.getAnio(), p.getGenero());
+                        System.out.println(p);
                     }
                     break;
 
@@ -66,8 +65,7 @@ public class Menu {
                     List<Pelicula> peliculasTitulo = peliculaDAO.buscarPorTitulo(fragmentoTitulo);
                     System.out.println("\nResultados de búsqueda por título:");
                     for (Pelicula p : peliculasTitulo) {
-                        System.out.printf("ID: %d, Título: %s, Director: %s, Año: %d, Género: %s%n",
-                                p.getId(), p.getTitulo(), p.getDirector(), p.getAnio(), p.getGenero());
+                        System.out.println(p);
                     }
                     break;
 
@@ -77,8 +75,7 @@ public class Menu {
                     List<Pelicula> peliculasAnio = peliculaDAO.buscarPorAnio(anioBusqueda);
                     System.out.println("\nResultados de búsqueda por año:");
                     for (Pelicula p : peliculasAnio) {
-                        System.out.printf("ID: %d, Título: %s, Director: %s, Año: %d, Género: %s%n",
-                                p.getId(), p.getTitulo(), p.getDirector(), p.getAnio(), p.getGenero());
+                       System.out.println(p);
                     }
                     break;
 
