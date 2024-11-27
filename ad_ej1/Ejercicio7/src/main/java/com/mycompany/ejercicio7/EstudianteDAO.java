@@ -24,4 +24,36 @@ public class EstudianteDAO {
         }
         return false;
     }
+    public void introduceEstudiante() throws SQLException{
+        
+        String query = "INSERT INTO estudiantes (nombre, email, telefono, direccion) VALUES (?, ?, ?, ?)";
+        Connection conn = ConexionBD.getConnection();
+       try (
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+           conn.setAutoCommit(false);
+           
+
+            stmt.setString(1,"Nombre1");
+            stmt.setString(2,"n@gmail.com");
+            stmt.setString(3, "666");
+            stmt.setString(4,"c/");
+            stmt.executeUpdate();
+            stmt.setString(1,"Nombre1");
+            stmt.setString(2,"hola@gmail.com");
+            stmt.setString(3, "666");
+            stmt.setString(4,"c/");
+            stmt.executeUpdate();
+            stmt.setString(1,"Nombre1");
+            stmt.setString(2,"n@gmail.com");
+            stmt.setString(3, "666");
+            stmt.setString(4,"c/");
+            stmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+           conn.rollback();
+        }finally{
+           conn.setAutoCommit(true);
+       }
+    }
 }
