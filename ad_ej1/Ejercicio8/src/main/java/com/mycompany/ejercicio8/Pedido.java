@@ -4,14 +4,13 @@
  */
 package com.mycompany.ejercicio8;
 
-import java.util.Date;
 
 public class Pedido {
     private int id;
-    private Date fecha;
+    private String fecha;
     private String cliente;
 
-    public Pedido(int id, Date fecha, String cliente) {
+    public Pedido(int id, String fecha, String cliente) {
         this.id = id;
         this.fecha = fecha;
         this.cliente = cliente;
@@ -26,7 +25,7 @@ public class Pedido {
     }
    
 
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 

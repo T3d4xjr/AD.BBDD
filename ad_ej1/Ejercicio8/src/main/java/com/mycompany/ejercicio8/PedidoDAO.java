@@ -11,11 +11,12 @@ public class PedidoDAO {
     // Agregar un nuevo pedido
     public boolean agregarPedido(Pedido pedido) {
     String query = "INSERT INTO pedido (fecha, cliente) VALUES (?, ?)";
-
+    String query2="INSERT INTO detalle_pedido (id_pedido,id_producto,cantidad,subtotal) VALUES(?,?,?,?)";
+    
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-        stmt.setDate(1, new java.sql.Date(pedido.getFecha().getTime()));
+        
+        stmt.setString(1,pedido.getFecha());
         stmt.setString(2, pedido.getCliente());
 
         int affectedRows = stmt.executeUpdate();
@@ -41,7 +42,7 @@ public class PedidoDAO {
     String query = "SELECT p.id, p.fecha, p.cliente, SUM(dp.subtotal) AS total "
                  + "FROM pedido p "
                  + "JOIN detalle_pedido dp ON p.id = dp.id_pedido "
-                 + "GROUP BY p.id, p.fecha, p.cliente";
+                 + "GROUP BY p.id";
 
     try (Connection conn = ConexionBD.getConnection();
          PreparedStatement stmt = conn.prepareStatement(query);

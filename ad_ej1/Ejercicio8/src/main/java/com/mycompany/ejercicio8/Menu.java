@@ -4,7 +4,6 @@
  */
 package com.mycompany.ejercicio8;
 
-import java.sql.*;
 import java.util.Scanner;
 
 public class Menu {
@@ -31,13 +30,13 @@ public class Menu {
 
             switch (opcion) {
                 case 1:
-                    añadirProducto(scanner);
+                    anadirProducto(scanner);
                     break;
                 case 2:
                     listarProductos();
                     break;
                 case 3:
-                    añadirPedido(scanner);
+                    anadirPedido(scanner);
                     break;
                 case 4:
                     listarPedidos();
@@ -54,10 +53,7 @@ public class Menu {
         } while (opcion != 6);
     }
 
-    private static void añadirProducto(Scanner scanner) {
-        System.out.print("Ingrese el ID del producto: ");
-        int idProducto = scanner.nextInt();
-        scanner.nextLine(); // Limpiar el buffer
+    private static void anadirProducto(Scanner scanner) {
         System.out.print("Ingrese el nombre del producto: ");
         String nombre = scanner.nextLine();
         System.out.print("Ingrese el stock del producto: ");
@@ -65,7 +61,7 @@ public class Menu {
         System.out.print("Ingrese el precio del producto: ");
         double precio = scanner.nextDouble();
 
-        Producto producto = new Producto(idProducto, nombre, stock, precio);
+        Producto producto = new Producto(0, nombre, stock, precio);
         if (productoDAO.agregarProducto(producto)) {
             System.out.println("Producto añadido exitosamente.");
         } else {
@@ -77,14 +73,13 @@ public class Menu {
         productoDAO.listarProductos();
     }
 
-    private static void añadirPedido(Scanner scanner) {
+    private static void anadirPedido(Scanner scanner) {
         System.out.print("Ingrese la fecha del pedido (YYYY-MM-DD): ");
         String fechaStr = scanner.nextLine();
-        Date fecha = Date.valueOf(fechaStr);
         System.out.print("Ingrese el nombre del cliente: ");
         String cliente = scanner.nextLine();
 
-        Pedido pedido = new Pedido(0, fecha, cliente);
+        Pedido pedido = new Pedido(0, fechaStr, cliente);
         if (pedidoDAO.agregarPedido(pedido)) {
             System.out.println("Pedido añadido exitosamente.");
         } else {
