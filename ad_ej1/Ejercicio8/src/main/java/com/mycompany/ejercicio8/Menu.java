@@ -4,6 +4,8 @@
  */
 package com.mycompany.ejercicio8;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -74,18 +76,49 @@ public class Menu {
     }
 
     private static void anadirPedido(Scanner scanner) {
-        System.out.print("Ingrese la fecha del pedido (YYYY-MM-DD): ");
-        String fechaStr = scanner.nextLine();
-        System.out.print("Ingrese el nombre del cliente: ");
-        String cliente = scanner.nextLine();
+    System.out.print("Ingrese la fecha del pedido (YYYY-MM-DD): ");
+    String fechaStr = scanner.nextLine();
 
-        Pedido pedido = new Pedido(0, fechaStr, cliente);
-        if (pedidoDAO.agregarPedido(pedido)) {
-            System.out.println("Pedido añadido exitosamente.");
-        } else {
-            System.out.println("Error al añadir el pedido.");
+    System.out.print("Ingrese el nombre del cliente: ");
+    String cliente = scanner.nextLine();
+
+    // Crear el objeto Pedido
+    Pedido pedido = new Pedido(0, fechaStr, cliente);
+
+    // Lista para los detalles del pedido
+    List<detallepedido> detalles = new ArrayList<>();
+
+    // Recopilar los detalles del pedido
+    while (true) {
+        System.out.print("Ingrese el ID del producto (0 para terminar): ");
+        int idProducto = scanner.nextInt();
+        if (idProducto == 0) {
+            break;
         }
+
+        System.out.print("Ingrese la cantidad del producto: ");
+        int cantidad = scanner.nextInt();
+
+        System.out.print("Ingrese el precio del producto: ");
+        double subtotal = scanner.nextDouble();
+        scanner.nextLine(); // Consumir el salto de línea restante
+
+        // Crear un detalle de pedido y añadirlo a la lista
+        detallepedido detalle = new detallepedido(cantidad, idProducto, idProducto, cantidad, subtotal);
+        detalle.setIdProducto(idProducto);
+        detalle.setCantidad(cantidad);
+        detalle.setSubtotal(subtotal);
+        detalles.add(detalle);
     }
+
+    // Llamar al método agregarPedido en pedidoDAO
+    if (pedidoDAO.agregarPedido(pedido, detalles)) {
+        System.out.println("Pedido añadido exitosamente.");
+    } else {
+        System.out.println("Error al añadir el pedido.");
+    }
+}
+
 
     private static void listarPedidos() {
         pedidoDAO.listarPedidos();

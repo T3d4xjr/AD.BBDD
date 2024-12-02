@@ -39,6 +39,26 @@ public class detallepedido {
         return subtotal;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setIdPedido(int idPedido) {
+        this.idPedido = idPedido;
+    }
+
+    public void setIdProducto(int idProducto) {
+        this.idProducto = idProducto;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public void setSubtotal(double subtotal) {
+        this.subtotal = subtotal;
+    }
+    
     @Override
     public String toString() {
         return idProducto + ", " + cantidad + ", " + subtotal + "€";

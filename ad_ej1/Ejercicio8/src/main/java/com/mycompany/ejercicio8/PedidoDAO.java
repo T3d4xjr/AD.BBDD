@@ -5,36 +5,84 @@
 package com.mycompany.ejercicio8;
 
 import java.sql.*;
+import java.util.List;
 
 public class PedidoDAO {
 
-    // Agregar un nuevo pedido
-    public boolean agregarPedido(Pedido pedido) {
-    String query = "INSERT INTO pedido (fecha, cliente) VALUES (?, ?)";
-    String query2="INSERT INTO detalle_pedido (id_pedido,id_producto,cantidad,subtotal) VALUES(?,?,?,?)";
-    
-    try (Connection conn = ConexionBD.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-        
-        stmt.setString(1,pedido.getFecha());
-        stmt.setString(2, pedido.getCliente());
+   public boolean agregarPedido(Pedido pedido, List<detallepedido> detalles) {
+    String queryPedido = "INSERT INTO pedido (fecha, cliente) VALUES (?, ?)";
+    String queryDetalle = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, subtotal) VALUES (?, ?, ?, ?)";
+    String updateStock = "UPDATE producto SET stock = stock - ? WHERE id = ?";
 
-        int affectedRows = stmt.executeUpdate();
+    try (Connection conn = ConexionBD.getConnection()) {
+        // Deshabilitar el autocommit para manejar la transacción manualmente
+        conn.setAutoCommit(false);
 
-        if (affectedRows > 0) {
-            // Obtener el ID generado automáticamente
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    pedido.setId(generatedKeys.getInt(1));  // Asignamos el ID generado
+        // Insertar el pedido
+        try (PreparedStatement stmtPedido = conn.prepareStatement(queryPedido, Statement.RETURN_GENERATED_KEYS)) {
+            stmtPedido.setString(1, pedido.getFecha());
+            stmtPedido.setString(2, pedido.getCliente());
+
+            int affectedRows = stmtPedido.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmtPedido.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        pedido.setId(generatedKeys.getInt(1)); // Asignar ID del pedido
+                    } else {
+                        throw new SQLException("No se pudo obtener el ID del pedido.");
+                    }
                 }
+            } else {
+                throw new SQLException("Error al insertar el pedido.");
             }
-            return true;
         }
+
+        // Procesar detalles del pedido
+        for (detallepedido detalle : detalles) {
+            // Calcular el subtotal
+           
+
+            // Insertar el detalle
+            try (PreparedStatement stmtDetalle = conn.prepareStatement(queryDetalle)) {
+                stmtDetalle.setInt(1, pedido.getId());
+                stmtDetalle.setInt(2, detalle.getIdProducto());
+                stmtDetalle.setInt(3, detalle.getCantidad());
+                stmtDetalle.setDouble(4, detalle.getSubtotal());
+                stmtDetalle.executeUpdate();
+            }
+
+            // Actualizar el stock
+            try (PreparedStatement stmtUpdateStock = conn.prepareStatement(updateStock)) {
+                stmtUpdateStock.setInt(1, detalle.getCantidad());
+                stmtUpdateStock.setInt(2, detalle.getIdProducto());
+                stmtUpdateStock.executeUpdate();
+            }
+        }
+
+        // Confirmar la transacción
+        conn.commit();
+        return true;
     } catch (SQLException e) {
         e.printStackTrace();
+        try (Connection conn = ConexionBD.getConnection()) {
+            if (conn != null) {
+                conn.rollback(); // Revertir transacción
+            }
+        } catch (SQLException rollbackEx) {
+            rollbackEx.printStackTrace();
+        }
+    } finally {
+        try (Connection conn = ConexionBD.getConnection()) {
+            if (conn != null) {
+                conn.setAutoCommit(true); // Restaurar autocommit
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
     return false;
 }
+
 
 
     // Listar todos los pedidos
