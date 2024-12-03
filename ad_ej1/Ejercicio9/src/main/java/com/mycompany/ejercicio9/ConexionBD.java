@@ -8,12 +8,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConexionDB {
+/**
+ *
+ * @author tedax
+ */
+public class ConexionBD {
     private static final String URL = "jdbc:mysql://localhost:3306/ad_ej9";
-    private static final String USER = "2dam"; 
+    private static final String USER = "2dam";
     private static final String PASSWORD = "2dam";
-
-    public static Connection getConnection() throws SQLException {
+    
+    public static Connection ConexionBD() throws SQLException
+    {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

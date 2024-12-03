@@ -4,6 +4,10 @@
  */
 package com.mycompany.ejercicio9;
 
+/**
+ *
+ * @author tedax
+ */
 public class Libro {
     private int id;
     private String titulo;
@@ -12,7 +16,6 @@ public class Libro {
     private int cantidadDisponible;
     private String categoria;
 
-    
     public Libro(int id, String titulo, String autor, int anioPublicacion, int cantidadDisponible, String categoria) {
         this.id = id;
         this.titulo = titulo;
@@ -75,5 +78,4 @@ public class Libro {
         return "Libro{" + "id=" + id + ", titulo=" + titulo + ", autor=" + autor + ", anioPublicacion=" + anioPublicacion + ", cantidadDisponible=" + cantidadDisponible + ", categoria=" + categoria + '}';
     }
     
-   
 }

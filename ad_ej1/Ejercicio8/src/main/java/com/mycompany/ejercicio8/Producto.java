@@ -8,10 +8,12 @@ public class Producto {
     private int id;
     private String nombre;
     private int stock;
-    private double precio;
+    private float precio;
 
-    public Producto(int id, String nombre, int stock, double precio) {
-        this.id = id;
+    public Producto() {
+    }
+
+    public Producto(String nombre, int stock, float precio) {
         this.nombre = nombre;
         this.stock = stock;
         this.precio = precio;
@@ -21,20 +23,33 @@ public class Producto {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public int getStock() {
         return stock;
     }
 
-    public double getPrecio() {
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public float getPrecio() {
         return precio;
     }
 
-    @Override
-    public String toString() {
-        return id + ", " + nombre + ", " + stock + ", " + precio + "€";
+    public void setPrecio(float precio) {
+        this.precio = precio;
     }
+    
+    
 }

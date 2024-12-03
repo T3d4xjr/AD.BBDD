@@ -4,11 +4,17 @@
  */
 package com.mycompany.ejercicio8;
 
-
+/**
+ *
+ * @author tedax
+ */
 public class Pedido {
     private int id;
     private String fecha;
     private String cliente;
+
+    public Pedido() {
+    }
 
     public Pedido(int id, String fecha, String cliente) {
         this.id = id;
@@ -23,23 +29,23 @@ public class Pedido {
     public void setId(int id) {
         this.id = id;
     }
-   
 
     public String getFecha() {
         return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
     public String getCliente() {
         return cliente;
     }
 
-    
-
-    @Override
-    public String toString() {
-        return id + ", " + fecha + ", " + cliente + ", ";
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
     }
 
-   
 
+    
 }

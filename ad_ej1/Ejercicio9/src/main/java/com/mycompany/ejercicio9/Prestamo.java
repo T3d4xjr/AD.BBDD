@@ -4,6 +4,10 @@
  */
 package com.mycompany.ejercicio9;
 
+/**
+ *
+ * @author tedax
+ */
 import java.sql.Date;
 
 public class Prestamo {
@@ -13,7 +17,6 @@ public class Prestamo {
     private String fechaPrestamo;
     private String estado;
 
-    // Constructor, Getters y Setters
     public Prestamo(int id, int idLibro, String lector, String fechaPrestamo, String estado) {
         this.id = id;
         this.idLibro = idLibro;
@@ -66,6 +69,6 @@ public class Prestamo {
     public String toString() {
         return "Prestamo{" + "id=" + id + ", idLibro=" + idLibro + ", lector=" + lector + ", fechaPrestamo=" + fechaPrestamo + ", estado=" + estado + '}';
     }
-
     
 }
+

@@ -4,31 +4,40 @@
  */
 package com.mycompany.ejercicio9;
 
+/**
+ *
+ * @author tedax
+ */
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibroDAO {
-    public void listarLibros() {
-    String query = "SELECT * FROM libro";
 
-    try (Connection conn = ConexionDB.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query);
-         ResultSet rs = stmt.executeQuery()) {
+    // Listar todos los libros
+    public List<Libro> listarLibros() {
+        List<Libro> libros = new ArrayList<>();
+        String sql = "SELECT * FROM libro";
 
-        System.out.println("\nLibros disponibles:");
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            String titulo = rs.getString("titulo");
-            String autor = rs.getString("autor");
-            int anioPublicacion = rs.getInt("anio_publicacion");
-            String categoria = rs.getString("categoria");
-            int cantidadDisponible = rs.getInt("cantidad_disponible");
+        try (Connection conexion = ConexionBD.ConexionBD();
+             Statement stmt = conexion.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                int anioPublicacion = rs.getInt("anio_publicacion");
+                int cantidadDisponible = rs.getInt("cantidad_disponible");
+                String categoria = rs.getString("categoria");
 
-            System.out.println("ID: " + id + ", Título: " + titulo + ", Autor: " + autor +
-                    ", Año: " + anioPublicacion + ", Categoría: " + categoria + ", Cantidad: " + cantidadDisponible);
+                Libro libro = new Libro(id, titulo, autor, anioPublicacion, cantidadDisponible, categoria);
+                libros.add(libro);
+                
+                
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al listar los libros: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return libros;
     }
-}
-
 }

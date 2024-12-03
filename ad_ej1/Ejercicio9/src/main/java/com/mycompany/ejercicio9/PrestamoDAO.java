@@ -5,96 +5,174 @@
 package com.mycompany.ejercicio9;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+/**
+ *
+ * @author tedax
+ */
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrestamoDAO {
-    public boolean registrarPrestamo(Prestamo prestamo) {
-        String query = "INSERT INTO prestamo (id_libro, lector, fecha_prestamo, estado) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+    // Registrar un nuevo préstamo y actualizar la cantidad del libro
+    public void registrarPrestamo(int idLibro, String lector, String fechaPrestamo) throws SQLException {
+        String sqlRegistrarPrestamo = "INSERT INTO prestamo (id_libro, lector, fecha_prestamo, estado) VALUES (?, ?, ?, 'Pendiente')";
+        String sqlActualizarCantidadLibro = "UPDATE libro SET cantidad_disponible = cantidad_disponible - 1 WHERE id = ?";
 
-            stmt.setInt(1, prestamo.getIdLibro());
-            stmt.setString(2, prestamo.getLector());
-            stmt.setString(3,prestamo.getFechaPrestamo());
-            stmt.setString(4, prestamo.getEstado());
+        // Crear la conexión aquí y no dentro del bloque finally
+        try (Connection conexion = ConexionBD.ConexionBD()) {
+            // Iniciar la transacción
+            conexion.setAutoCommit(false);  // Desactivamos el autocommit para hacer las operaciones en transacción
 
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+            // Registrar el préstamo
+            try (PreparedStatement psPrestamo = conexion.prepareStatement(sqlRegistrarPrestamo)) {
+                psPrestamo.setInt(1, idLibro);
+                psPrestamo.setString(2, lector);
+                psPrestamo.setString(3, fechaPrestamo);
+                psPrestamo.executeUpdate();  // Registramos el préstamo
+            }
 
+            // Actualizar la cantidad disponible del libro
+            try (PreparedStatement psCantidad = conexion.prepareStatement(sqlActualizarCantidadLibro)) {
+                psCantidad.setInt(1, idLibro);
+                psCantidad.executeUpdate();  // Actualizamos la cantidad disponible del libro
+            }
+
+            // Confirmamos la transacción
+            conexion.commit();
+            System.out.println("Préstamo registrado correctamente y cantidad del libro actualizada.");
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            // Si ocurre algún error, revertimos la transacción
+            try {
+                // Realizamos el rollback de la misma conexión
+                Connection conexion = ConexionBD.ConexionBD();
+                conexion.rollback();
+            } catch (SQLException rollbackEx) {
+                System.out.println("Error al hacer rollback: " + rollbackEx.getMessage());
+            }
+        }finally{
+            try (Connection conexion = ConexionBD.ConexionBD()) {
+                conexion.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.out.println("Error al restaurar el autocommit: " + e.getMessage());
+            }
         }
     }
-    public boolean devolverPrestamo(int idPrestamo) {
-        String query = "UPDATE prestamo SET estado = 'Devuelto' WHERE id = ?";
+    // Método para devolver un préstamo y actualizar la cantidad del libro
+    public void devolverPrestamo(int idPrestamo) throws SQLException {
+        String sqlDevolverPrestamo = "UPDATE prestamo SET estado = 'Devuelto' WHERE id = ?";
+        String sqlActualizarCantidadLibro = "UPDATE libro SET cantidad_disponible = cantidad_disponible + 1 WHERE id = (SELECT id_libro FROM prestamo WHERE id = ?)";
 
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conexion = ConexionBD.ConexionBD()) {
+            // Iniciar la transacción
+            conexion.setAutoCommit(false);  // Desactivamos el autocommit para hacer las operaciones en transacción
 
-            stmt.setInt(1, idPrestamo);
+            // Devolver el préstamo (cambiar el estado a "Devuelto")
+            try (PreparedStatement psDevolver = conexion.prepareStatement(sqlDevolverPrestamo)) {
+                psDevolver.setInt(1, idPrestamo);
+                psDevolver.executeUpdate();  // Actualizamos el estado del préstamo
+            }
 
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
+            // Actualizar la cantidad disponible del libro
+            try (PreparedStatement psCantidad = conexion.prepareStatement(sqlActualizarCantidadLibro)) {
+                psCantidad.setInt(1, idPrestamo);
+                psCantidad.executeUpdate();  // Actualizamos la cantidad disponible del libro
+            }
 
+            // Confirmamos la transacción
+            conexion.commit();
+            System.out.println("Préstamo devuelto correctamente y cantidad del libro actualizada.");
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+           try {
+                // Realizamos el rollback de la misma conexión
+                Connection conexion = ConexionBD.ConexionBD();
+                conexion.rollback();
+            } catch (SQLException rollbackEx) {
+                System.out.println("Error al hacer rollback: " + rollbackEx.getMessage());
+            }  // Volvemos a lanzar la excepción para que se maneje adecuadamente
+        } finally {
+            // Aseguramos que el autocommit vuelva a su valor por defecto
+            try (Connection conexion = ConexionBD.ConexionBD()) {
+                conexion.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.out.println("Error al restaurar el autocommit: " + e.getMessage());
+            }
+        }
+    }
+    
+    public List<Prestamo> listarPrestamosPendientes() throws SQLException {
+    List<Prestamo> prestamosPendientes = new ArrayList<>();
+    
+    // Consulta para obtener los préstamos pendientes con los detalles del libro
+    String sqlListarPrestamosPendientes = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado "
+            + "FROM prestamo p "
+            + "JOIN libro l ON p.id_libro = l.id "
+            + "WHERE p.estado = 'Pendiente'";
+
+    try (Connection conexion = ConexionBD.ConexionBD();
+         PreparedStatement stmt = conexion.prepareStatement(sqlListarPrestamosPendientes);
+         ResultSet rs = stmt.executeQuery()) {
+        
+        // Recorrer los resultados de la consulta
+        while (rs.next()) {
+            int idPrestamo = rs.getInt("id");  // Obtener el ID del préstamo
+            String fechaPrestamo = rs.getString("fecha_prestamo");
+            String tituloLibro = rs.getString("titulo");
+            String autorLibro = rs.getString("autor");
+            String lector = rs.getString("lector");
+            String estado = rs.getString("estado");
+
+            // Crear el objeto Prestamo con la información obtenida
+            Prestamo prestamo = new Prestamo(idPrestamo, idPrestamo, lector, fechaPrestamo, estado);  // Aquí pasamos el id correcto
+            
+            // Agregar el préstamo a la lista
+            prestamosPendientes.add(prestamo);
+
+            // Mostrar los detalles del préstamo directamente
+            System.out.println(prestamo.getId() + ", " + prestamo.getFechaPrestamo() + ", " + tituloLibro + ", " 
+                    + autorLibro + ", " + prestamo.getLector() + ", " + prestamo.getEstado());
         }
     }
 
+    return prestamosPendientes;
+}
 
-    public void listarPrestamosPendientes() {
-        String query = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado " +
-                       "FROM prestamo p JOIN libro l ON p.id_libro = l.id WHERE p.estado = 'Pendiente'";
+     // Método para listar todos los préstamos
+    public List<Prestamo> listarTodosPrestamos() throws SQLException {
+        List<Prestamo> prestamos = new ArrayList<>();
 
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
+        // Consulta para obtener todos los préstamos con los detalles del libro
+        String sqlListarTodosPrestamos = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado "
+                + "FROM prestamo p "
+                + "JOIN libro l ON p.id_libro = l.id";
+
+        try (Connection conexion = ConexionBD.ConexionBD();
+             PreparedStatement stmt = conexion.prepareStatement(sqlListarTodosPrestamos);
              ResultSet rs = stmt.executeQuery()) {
-
-            System.out.println("\nPréstamos pendientes:");
+            
+            // Recorrer los resultados de la consulta
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int idPrestamo = rs.getInt("id");
                 String fechaPrestamo = rs.getString("fecha_prestamo");
-                String titulo = rs.getString("titulo");
-                String autor = rs.getString("autor");
+                String tituloLibro = rs.getString("titulo");
+                String autorLibro = rs.getString("autor");
                 String lector = rs.getString("lector");
                 String estado = rs.getString("estado");
 
-                System.out.println("ID: " + id + ", Fecha: " + fechaPrestamo + ", Título: " + titulo +
-                        ", Autor: " + autor + ", Cliente: " + lector + ", Estado: " + estado);
+                // Crear el objeto Prestamo con la información obtenida
+                Prestamo prestamo = new Prestamo(idPrestamo, idPrestamo, lector, fechaPrestamo, estado);
+                
+                // Mostrar los detalles del préstamo directamente
+                System.out.println(prestamo.getId() + ", " + prestamo.getFechaPrestamo() + ", " + tituloLibro + ", " 
+                        + autorLibro + ", " + prestamo.getLector() + ", " + prestamo.getEstado());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
+        return prestamos;
     }
-
-    public void listarTodosPrestamos() {
-        String query = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado " +
-                       "FROM prestamo p JOIN libro l ON p.id_libro = l.id";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-
-            System.out.println("\nTodos los préstamos:");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String fechaPrestamo = rs.getString("fecha_prestamo");
-                String titulo = rs.getString("titulo");
-                String autor = rs.getString("autor");
-                String lector = rs.getString("lector");
-                String estado = rs.getString("estado");
-
-                System.out.println("ID: " + id + ", Fecha: " + fechaPrestamo + ", Título: " + titulo +
-                        ", Autor: " + autor + ", Cliente: " + lector + ", Estado: " + estado);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }

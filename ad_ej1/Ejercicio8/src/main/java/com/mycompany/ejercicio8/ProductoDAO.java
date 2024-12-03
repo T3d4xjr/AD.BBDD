@@ -4,49 +4,66 @@
  */
 package com.mycompany.ejercicio8;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ *
+ * @author tedax
+ */
 public class ProductoDAO {
-
-    // Agregar un nuevo producto
-    public boolean agregarProducto(Producto producto) {
-        String query = "INSERT INTO producto (nombre, stock, precio) VALUES (?, ?, ?)";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, producto.getNombre());
-            stmt.setInt(2, producto.getStock());
-            stmt.setDouble(3, producto.getPrecio());
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+    
+    public void agregarProducto(Producto producto){
+        String sqlAgregarProducto = "INSERT INTO producto(nombre, stock, precio) VALUES (?, ?, ?)";
+        try(Connection conn = ConexionBD.ConexionBD())
+        {
+            try(PreparedStatement ps = conn.prepareStatement(sqlAgregarProducto))
+            {
+                ps.setString(1, producto.getNombre());
+                ps.setInt(2, producto.getStock());
+                ps.setFloat(3, producto.getPrecio());
+                
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al agregar un producto " + ex.getMessage());
         }
     }
-
-
-    // Listar todos los productos
-    public void listarProductos() {
-        String query = "SELECT * FROM producto";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nombre = rs.getString("nombre");
-                int stock = rs.getInt("stock");
-                double precio = rs.getDouble("precio");
-
-                System.out.println("ID: " + id + ", Nombre: " + nombre + ", Stock: " + stock + ", Precio: " + precio);
+    
+    public List <Producto> listaProductos()
+    {
+        List <Producto> productos = new ArrayList<>();
+        String sqlListarProductos = "SELECT * FROM producto;";
+        try(Connection conexion = ConexionBD.ConexionBD())
+        {
+            try(Statement stmt = conexion.createStatement(); ResultSet rs = stmt.executeQuery(sqlListarProductos))
+            {
+                System.out.println("Productos (ID, nombre, stock, precio)");
+                while(rs.next())
+                {
+                    int idProducto = rs.getInt("id");
+                    String nombreProducto = rs.getString("nombre");
+                    int stockProducto = rs.getInt("stock");
+                    float precioProducto = rs.getFloat("precio");
+                    
+                    Producto producto = new Producto();
+                    producto.setId(idProducto);
+                    producto.setNombre(nombreProducto);
+                    producto.setStock(stockProducto);
+                    producto.setPrecio(precioProducto);
+                    
+                    productos.add(producto);
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            System.err.println("Error al listar " + ex.getMessage());
         }
+        return productos;
     }
 }
+
