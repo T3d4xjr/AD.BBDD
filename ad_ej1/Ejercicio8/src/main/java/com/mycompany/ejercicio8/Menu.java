@@ -101,10 +101,10 @@ public class Menu {
 
         System.out.print("Ingrese el precio del producto: ");
         double subtotal = scanner.nextDouble();
-        scanner.nextLine(); // Consumir el salto de línea restante
+        scanner.nextLine(); 
 
-        // Crear un detalle de pedido y añadirlo a la lista
-        detallepedido detalle = new detallepedido(cantidad, idProducto, idProducto, cantidad, subtotal);
+        
+        detallepedido detalle = new detallepedido(0, 0, idProducto, cantidad, subtotal);
         detalle.setIdProducto(idProducto);
         detalle.setCantidad(cantidad);
         detalle.setSubtotal(subtotal);

@@ -15,7 +15,7 @@ public class PedidoDAO {
     String updateStock = "UPDATE producto SET stock = stock - ? WHERE id = ?";
 
     try (Connection conn = ConexionBD.getConnection()) {
-        // Deshabilitar el autocommit para manejar la transacción manualmente
+        // Deshabilitar el autocommit para manejar la transacción manusalmente
         conn.setAutoCommit(false);
 
         // Insertar el pedido
@@ -47,7 +47,7 @@ public class PedidoDAO {
                 stmtDetalle.setInt(1, pedido.getId());
                 stmtDetalle.setInt(2, detalle.getIdProducto());
                 stmtDetalle.setInt(3, detalle.getCantidad());
-                stmtDetalle.setDouble(4, detalle.getSubtotal());
+                stmtDetalle.setDouble(4,detalle.getSubtotal());
                 stmtDetalle.executeUpdate();
             }
 
