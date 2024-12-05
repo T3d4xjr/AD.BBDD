@@ -105,9 +105,8 @@ public class PrestamoDAO {
         }
     }
     
-    public List<Prestamo> listarPrestamosPendientes() throws SQLException {
-    List<Prestamo> prestamosPendientes = new ArrayList<>();
-    
+    public void listarPrestamosPendientes() throws SQLException {
+   
     // Consulta para obtener los préstamos pendientes con los detalles del libro
     String sqlListarPrestamosPendientes = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado "
             + "FROM prestamo p "
@@ -127,24 +126,18 @@ public class PrestamoDAO {
             String lector = rs.getString("lector");
             String estado = rs.getString("estado");
 
-            // Crear el objeto Prestamo con la información obtenida
-            Prestamo prestamo = new Prestamo(idPrestamo, idPrestamo, lector, fechaPrestamo, estado);  // Aquí pasamos el id correcto
-            
-            // Agregar el préstamo a la lista
-            prestamosPendientes.add(prestamo);
+           
 
             // Mostrar los detalles del préstamo directamente
-            System.out.println(prestamo.getId() + ", " + prestamo.getFechaPrestamo() + ", " + tituloLibro + ", " 
-                    + autorLibro + ", " + prestamo.getLector() + ", " + prestamo.getEstado());
+            System.out.println(idPrestamo + ", " + fechaPrestamo + ", " + tituloLibro + ", " 
+                    + autorLibro + ", " +lector + ", " +estado);
         }
     }
 
-    return prestamosPendientes;
 }
 
      // Método para listar todos los préstamos
-    public List<Prestamo> listarTodosPrestamos() throws SQLException {
-        List<Prestamo> prestamos = new ArrayList<>();
+    public void listarTodosPrestamos() throws SQLException {
 
         // Consulta para obtener todos los préstamos con los detalles del libro
         String sqlListarTodosPrestamos = "SELECT p.id, p.fecha_prestamo, l.titulo, l.autor, p.lector, p.estado "
@@ -164,15 +157,13 @@ public class PrestamoDAO {
                 String lector = rs.getString("lector");
                 String estado = rs.getString("estado");
 
-                // Crear el objeto Prestamo con la información obtenida
-                Prestamo prestamo = new Prestamo(idPrestamo, idPrestamo, lector, fechaPrestamo, estado);
+                
                 
                 // Mostrar los detalles del préstamo directamente
-                System.out.println(prestamo.getId() + ", " + prestamo.getFechaPrestamo() + ", " + tituloLibro + ", " 
-                        + autorLibro + ", " + prestamo.getLector() + ", " + prestamo.getEstado());
+                System.out.println(idPrestamo + ", " + fechaPrestamo + ", " + tituloLibro + ", " 
+                        + autorLibro + ", " + lector + ", " +estado);
             }
         }
 
-        return prestamos;
     }
 }

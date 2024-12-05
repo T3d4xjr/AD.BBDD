@@ -16,10 +16,11 @@ public class Prestamo {
     private String lector;
     private String fechaPrestamo;
     private String estado;
+    private Libro libro;
 
-    public Prestamo(int id, int idLibro, String lector, String fechaPrestamo, String estado) {
+    public Prestamo(int id, Libro l, String lector, String fechaPrestamo, String estado) {
         this.id = id;
-        this.idLibro = idLibro;
+        this.libro = l;
         this.lector = lector;
         this.fechaPrestamo = fechaPrestamo;
         this.estado = estado;
